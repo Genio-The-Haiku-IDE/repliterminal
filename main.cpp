@@ -57,17 +57,23 @@ Window::Window()
 			B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS|B_QUIT_ON_WINDOW_CLOSE),
 	fTermView(NULL)
 {
-#if 0
+	BMessage* exec = new BMessage(B_EXECUTE_PROPERTY);
+	exec->AddSpecifier("command");
+	exec->AddString("argv", "/bin/sh");
+	exec->AddString("argv", "-c");
+	exec->AddString("argv", "ls");
+	exec->AddBool("clear", true);
+	
 	BMenuBar* menuBar = new BMenuBar(Bounds(), "menubar");
 	BMenu* menu = new BMenu("command");
-	BMenuItem* item = new BMenuItem("restart terminal", new BMessage('9999'));
+	BMenuItem* item = new BMenuItem("restart terminal", exec);
 	menu->AddItem(item);
 	menuBar->AddItem(menu);
 	AddChild(menuBar);
-#endif
+
 	AttachTermView();
 	
-//	menu->SetTargetForItems(fTermView);
+	menu->SetTargetForItems(fTermView);
 }
 
 
@@ -91,10 +97,7 @@ Window::AttachTermView()
 	message.AddString("class", "TermView");
 	message.AddString("add_on", "application/x-vnd.Haiku-Terminal");
 	message.AddBool("use_rect", true);
-#if 0
-	message.AddString("argv", "ls");
-	message.AddInt32("argc", 1);
-#endif
+
 	BRect rect = Bounds();
 	rect.top += 32;
 	message.AddRect("_frame", rect);
